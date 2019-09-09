@@ -1,0 +1,140 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ynet.empdoc.dao.EmpdocManagerDao">
+
+    <resultMap id="componentType" type="com.ynet.empdoc.entity.ComponentType">
+        <result column="id" jdbcType="INTEGER" property="id" />
+        <result column="name" jdbcType="VARCHAR" property="name" />
+    </resultMap>
+
+    <resultMap id="component" type="com.ynet.empdoc.entity.Component">
+        <result column="id" jdbcType="INTEGER" property="id" />
+        <result column="name" jdbcType="VARCHAR" property="name" />
+        <result column="type" jdbcType="VARCHAR" property="type" />
+        <result column="componentId" jdbcType="VARCHAR" property="componentId" />
+        <result column="introduce" jdbcType="VARCHAR" property="introduce" />
+        <result column="impl" jdbcType="VARCHAR" property="impl" />
+        <result column="basicUse" jdbcType="VARCHAR" property="basicUse" />
+        <result column="inputParams" jdbcType="VARCHAR" property="inputParams" />
+        <result column="outputParams" jdbcType="VARCHAR" property="outputParams" />
+        <result column="result" jdbcType="VARCHAR" property="result" />
+        <result column="notices" jdbcType="VARCHAR" property="notices" />
+        <result column="version" jdbcType="VARCHAR" property="version" />
+    </resultMap>
+
+    <insert id="addComponent" parameterType="com.ynet.empdoc.entity.Component">
+        insert into component(name,type,componentId,introduce,impl,basicUse,inputParams,outputParams,result,notices,version,submittime)values(
+        #{name },#{type },#{componentId},#{introduce},#{impl},#{basicUse},#{inputParams},#{outputParams},#{result},#{notices},#{version},#{submitTime}
+        )
+    </insert>
+
+    <select id="queryComponentList" parameterType="com.ynet.empdoc.entity.Component"
+            resultType="com.ynet.empdoc.entity.Component">
+        select id,name,type,componentid,introduce,impl,basicUse,inputParams,outputParams,result,notices
+        from component
+        <trim prefix="where" prefixOverrides="and">
+            <if test="id!=0">
+                id=#{id}
+            </if>
+            <if test="name!=null">
+                and name =#{name}
+            </if>
+            <if test="type!=0">
+                and type =#{type}
+            </if>
+            <if test="componentId!=null">
+                and componentid=#{componentid}
+            </if>
+            <if test="introduce!=null">
+                and introduce!=#{introduce}
+            </if>
+            <if test="impl!=null">
+                and impl=#{impl}
+            </if>
+            <if test="basicUse!=null">
+                and basicUse=#{basicUse}
+            </if>
+            <if test="inputParams !=null">
+                and inputParams =#{inputParams}
+            </if>
+            <if test="outputParams!=null">
+                and outputParams=#{outputParams}
+            </if>
+            <if test="result!=null">
+                and result =#{result}
+            </if>
+            <if test="notices!=null">
+                and notices=#{notices}
+            </if>
+        </trim>
+    </select>
+
+    <insert id="addComponentType" parameterType="com.ynet.empdoc.entity.ComponentType">
+        insert into componentType(name) values (#{name })
+    </insert>
+
+    <select id="queryComponentTypeList" parameterType="com.ynet.empdoc.entity.ComponentType" resultType="com.ynet.empdoc.entity.ComponentType">
+        select id,name from componentType
+        <trim prefix="where" suffixOverrides="and">
+            <if test="id!=0">
+                id = #{id}
+            </if>
+            <if test="name!=null">
+                and name concat('%',concat(#{name},'%'))
+            </if>
+        </trim>
+    </select>
+
+    <select id="queryComponentTypeAndComponent" resultType="java.util.Map">
+        select ct.id as componentTypeId,ct.name as componenTypeName, c.id as componentId ,c.name as componentName ,max(c.version) as maxVersion from componentType ct join component c on ct.id=c.type  group by c.id
+    </select>
+
+    <select id="queryComponentTypeNotInComponent" resultType="java.util.Map">
+        select name as componenTypeName from componentType type where not exists (select t.id from component t where t.type=type.id)
+    </select>
+
+
+    <update id="updateComponent" parameterType="com.ynet.empdoc.entity.Component">
+        update component
+        <trim prefix="set" suffixOverrides=",">
+        <if test="name!=null">
+            name =#{name},
+        </if>
+        <if test="type!=0">
+            type =#{type},
+        </if>
+        <if test="componentId!=null">
+            componentId=#{componentId},
+        </if>
+        <if test="introduce!=null">
+            introduce=#{introduce},
+        </if>
+        <if test="impl!=null">
+            impl=#{impl},
+        </if>
+        <if test="basicUse!=null">
+            basicUse=#{basicUse},
+        </if>
+        <if test="inputParams!=null">
+            inputParams =#{inputParams},
+        </if>
+        <if test="outputParams!=null">
+            outputParams=#{outputParams},
+        </if>
+        <if test="result!=null">
+            result =#{result},
+        </if>
+        <if test="notices!=null">
+            notices=#{notices},
+        </if>
+        <if test="version!=0">
+            version=#{version},
+        </if>
+        <if test="submitTime!=null">
+           submitTime=#{submitTime},
+        </if>
+        </trim>
+        where id =#{id}
+    </update>
+
+</mapper>
